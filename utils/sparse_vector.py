@@ -14,7 +14,6 @@ def sparsify(v):
             flattened_list.append((index,value))
     return flattened_list
 
-
 # <V,V> => QQ
 def sparse_inner_product(a,b):
     i = 0; j = 0

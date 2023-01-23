@@ -19,7 +19,7 @@ def form_indeterminates(nlst):
                 recursive_form(newvar, lst[1:])
                 
     recursive_form("", nlst)
-    return [var("".join(["x_", s])) for s in res]
+    return [var("".join(["x_",s])) for s in res]
 
 def form_flattening_pairs(n):
     res = []
@@ -31,6 +31,16 @@ def form_flattening_pairs(n):
         for m in Combinations(range(len(n)), len(n) - len(c)):
             if len(set(c).union(set(m))) == len(n):
                 res.append([c, m])
+    return res
+
+def form_flattening_pairs_MPS(n):
+    res = []
+    fp = form_flattening_pairs(n)
+    for p in fp:
+        left = all(i == j-1 for i, j in zip(p[0], p[0][1:]))
+        right = all(i == j-1 for i, j in zip(p[1], p[1][1:]))
+        if left and right:    
+            res.append(p)
     return res
 
 def indexer(n, dimensions, indexlst):
@@ -66,6 +76,18 @@ def flattening(pair, n):
 def get_flattening_minors(R, n, degree):
     minors = []
     res = form_flattening_pairs(n)
+    for pair in res:
+        A = flattening(pair, n)
+        nrows = len(A)
+        ncols = len(A[0])
+        M = MatrixSpace(R, nrows, ncols)
+        A_ = M(A)
+        minors = minors + A_.minors(degree)
+    return minors
+
+def get_flattening_minors_MPS(R, n, degree):
+    minors = []
+    res = form_flattening_pairs_MPS(n)
     for pair in res:
         A = flattening(pair, n)
         nrows = len(A)
